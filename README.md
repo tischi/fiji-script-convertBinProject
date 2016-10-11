@@ -4,6 +4,10 @@ For questions please contact: tischitischer@gmail.com
 
 This repository conatins a Fiji script to process a folder of image stacks and save them in a different file format, binned, different bit-depth and x,y,z projections.
 
+### credits
+
+The code for x,z,y projection is taken from here: http://www.masny.dk/imagej/max_xyz_project/index.php
+
 ### installation
 
 - install fiji: https://fiji.sc/
