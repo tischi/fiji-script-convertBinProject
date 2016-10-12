@@ -145,7 +145,6 @@ def analyze(iDataSet, tbModel, p):
   #
   # Open file
   #
-  
   filepath = tbModel.getFileAbsolutePathString(iDataSet, "Input", "IMG")
   
   if filepath.endswith('.mha'):
@@ -154,7 +153,21 @@ def analyze(iDataSet, tbModel, p):
   else:
     imp = IJ.openImage(filepath)
 
-
+  #
+  # Crop after loading
+  #  
+  if p['crop']:
+    x_min = int(p['mask_roi'][0])
+    y_min = int(p['mask_roi'][1])
+    z_min = int(p['mask_roi'][2])
+    x_width = int(p['mask_roi'][3])
+    y_width = int(p['mask_roi'][4])
+    z_width = int(p['mask_roi'][5])
+  
+    stack = imp.getImageStack()
+    stack_cropped = stack.crop(x_min, y_min, z_min, x_width, y_width, z_width)
+    imp = ImagePlus('',stack)
+  
   #
   # Convert
   #
@@ -164,18 +177,19 @@ def analyze(iDataSet, tbModel, p):
   #
   # Scale (Binning)
   #
-  sx = float(1.0/p['binning_x'])
-  sy = float(1.0/p['binning_y'])
-  sz = float(1.0/p['binning_z'])
-  parameters =  "x="+str(sx)+" y="+str(sy)+" z="+str(sz)+" interpolation=Bilinear average process create"
-  IJ.run(imp, "Scale...", parameters);
-  imp = IJ.getImage()
+  if p['binning']:
+    sx = float(1.0/p['binning_x'])
+    sy = float(1.0/p['binning_y'])
+    sz = float(1.0/p['binning_z'])
+    parameters =  "x="+str(sx)+" y="+str(sy)+" z="+str(sz)+" interpolation=Bilinear average process create"
+    IJ.run(imp, "Scale...", parameters);
+    imp = IJ.getImage()
 
 
   #
   # Save converted volume data
   #
-  if p['save_binned_volume_data']:
+  if p['save_volume_data']:
     converted_filename = tbModel.getFileName(iDataSet, "Input", "IMG")+"--converted."+p['output_format']
     tbModel.setFileAbsolutePath(p['output_folder'], converted_filename, iDataSet, 'Output', 'IMG')
     IJ.saveAs(imp, p['output_format'], tbModel.getFileAbsolutePathString(iDataSet, 'Output', 'IMG'))
@@ -341,7 +355,7 @@ if __name__ == '__main__':
     p_gui = {}
     # exposed to GUI
     p_gui['expose_to_gui'] = {'value': ['input_folder', 'reg_exp', 'output_folder', 'output_format', 
-    'bit_depth', 'map_to_zero', 'map_to_max',
+    'bit_depth', 'map_to_zero', 'map_to_max', 'binning',
     'binning_x','binning_y','binning_z','save_xyz_projections','save_binned_volume_data']}
     p_gui['input_folder'] = {'choices': '', 'value': 'C:\\Users\\acquifer\\Desktop\\882-reg3', 'type': 'folder'}
     p_gui['reg_exp'] = {'choices': '', 'value': '.*--transformed.mha', 'type': 'folder'}
@@ -350,11 +364,15 @@ if __name__ == '__main__':
     p_gui['bit_depth'] = {'choices': ['8-bit','16-bit'], 'value': '16', 'type': 'string'}
     p_gui['map_to_zero'] = {'choices':'', 'value': 0, 'type': 'int'}
     p_gui['map_to_max'] = {'choices':'', 'value': 65535, 'type': 'int'}
+    p_gui['save_binned_volume_data'] = {'choices': '', 'value': True, 'type': 'boolean'}
+
+    p_gui['binning'] = {'choices': '', 'value': False, 'type': 'boolean'}
     p_gui['binning_x'] = {'choices': '', 'value': 1, 'type': 'int'}
     p_gui['binning_y'] = {'choices': '', 'value': 1, 'type': 'int'}
     p_gui['binning_z'] = {'choices': '', 'value': 1, 'type': 'int'}
+    
     p_gui['save_xyz_projections'] = {'choices': '', 'value': True, 'type': 'boolean'}
-    p_gui['save_binned_volume_data'] = {'choices': '', 'value': True, 'type': 'boolean'}
+    p_gui['save_volume_data'] = {'choices': '', 'value': True, 'type': 'boolean'}
 
     
   #
