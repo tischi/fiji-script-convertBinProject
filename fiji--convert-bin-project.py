@@ -372,9 +372,9 @@ if __name__ == '__main__':
     p_gui['save_binned_volume_data'] = {'choices': '', 'value': True, 'type': 'boolean'}
 
     p_gui['binning'] = {'choices': '', 'value': False, 'type': 'boolean'}
-    p_gui['binning_x'] = {'choices': '', 'value': 1, 'type': 'int'}
-    p_gui['binning_y'] = {'choices': '', 'value': 1, 'type': 'int'}
-    p_gui['binning_z'] = {'choices': '', 'value': 1, 'type': 'int'}
+    p_gui['binning_x'] = {'choices': '', 'value': 1, 'type': 'float'}
+    p_gui['binning_y'] = {'choices': '', 'value': 1, 'type': 'float'}
+    p_gui['binning_z'] = {'choices': '', 'value': 1, 'type': 'float'}
     
     p_gui['save_xyz_projections'] = {'choices': '', 'value': True, 'type': 'boolean'}
     p_gui['save_volume_data'] = {'choices': '', 'value': True, 'type': 'boolean'}
