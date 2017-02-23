@@ -154,9 +154,9 @@ def analyze(iDataSet, tbModel, p):
     IJ.run(imp, "32-bit", "");
     IJ.setMinAndMax(0, 65535);
     IJ.run(imp, "16-bit", "");
-
   else:
     imp = IJ.openImage(filepath)
+    imp.show()
 
   #
   # Crop after loading
@@ -361,7 +361,7 @@ if __name__ == '__main__':
     # exposed to GUI
     p_gui['expose_to_gui'] = {'value': ['input_folder', 'reg_exp', 'output_folder', 'output_format', 
     'bit_depth', 'map_to_zero', 'map_to_max', 'binning',
-    'binning_x','binning_y','binning_z','save_xyz_projections','save_binned_volume_data']}
+    'binning_x','binning_y','binning_z','save_xyz_projections','save_volume_data']}
     p_gui['input_folder'] = {'choices': '', 'value': 'C:\\Users\\acquifer\\Desktop\\882-reg3', 'type': 'folder'}
     p_gui['reg_exp'] = {'choices': '', 'value': '.*--transformed.mha$', 'type': 'folder'}
     p_gui['output_folder'] = {'choices': '', 'value': 'C:\\Users\\acquifer\\Desktop\\xyz01', 'type': 'folder'}
@@ -369,8 +369,7 @@ if __name__ == '__main__':
     p_gui['bit_depth'] = {'choices': ['8-bit','16-bit'], 'value': '16', 'type': 'string'}
     p_gui['map_to_zero'] = {'choices':'', 'value': 0, 'type': 'int'}
     p_gui['map_to_max'] = {'choices':'', 'value': 65535, 'type': 'int'}
-    p_gui['save_binned_volume_data'] = {'choices': '', 'value': True, 'type': 'boolean'}
-
+    
     p_gui['binning'] = {'choices': '', 'value': False, 'type': 'boolean'}
     p_gui['binning_x'] = {'choices': '', 'value': 1, 'type': 'float'}
     p_gui['binning_y'] = {'choices': '', 'value': 1, 'type': 'float'}
