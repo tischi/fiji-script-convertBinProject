@@ -13,6 +13,8 @@ The code for x,z,y projection is taken from here: http://www.masny.dk/imagej/max
 - install fiji: https://fiji.sc/
 - download and extract this repository: https://github.com/tischi/fiji-convert-bin-project/archive/master.zip
 - move the **.jar** files to Fiji's plugin folder
+- You need the HDF5 plugin
+	- [Fiji > Update > Manage Update Sites] [X] HFD5
 
 ### run it
 
