@@ -11,8 +11,8 @@
 #
 # Output:
 #
-#
-
+# Requirements:
+# - HDF5 Plugin
 
 from ij.io import OpenDialog
 from ij.io import Opener
@@ -154,6 +154,10 @@ def analyze(iDataSet, tbModel, p):
     IJ.run(imp, "32-bit", "");
     IJ.setMinAndMax(0, 65535);
     IJ.run(imp, "16-bit", "");
+  elif filepath.endswith('.h5'):
+    imp = None
+    IJ.run(imp, "Scriptable load HDF5...", "load="+filepath+" datasetnames="+p["HDF5_data_set_name"]+" nframes=1 nchannels=1");
+    imp = IJ.getImage()
   else:
     imp = IJ.openImage(filepath)
     imp.show()
@@ -177,7 +181,7 @@ def analyze(iDataSet, tbModel, p):
   # Convert
   #
   IJ.setMinAndMax(p['map_to_zero'], p['map_to_max']);
-  IJ.run(imp, p['bit_depth'], "");
+  IJ.run(imp, p['output_bit_depth'], "");
 
   #
   # Scale (Binning)
@@ -199,7 +203,6 @@ def analyze(iDataSet, tbModel, p):
     tbModel.setFileAbsolutePath(p['output_folder'], converted_filename, iDataSet, 'Output', 'IMG')
     IJ.saveAs(imp, p['output_format'], tbModel.getFileAbsolutePathString(iDataSet, 'Output', 'IMG'))
     
-  
   #
   # Projections 
   #
@@ -334,6 +337,35 @@ def get_parameters(p):
     
   return p
 
+
+#
+# Ensure empty dir
+#  
+
+def ensure_empty_dir(path):
+    if os.path.isdir(path):
+        print("Removing contents of "+path)
+        for entry in os.listdir(path):
+            abspath = os.path.join(path, entry)
+            if os.path.isdir(abspath):
+                shutil.rmtree(abspath)
+            elif os.path.isfile(abspath):
+                os.remove(abspath)
+            elif os.path.lexists(abspath):
+                raise Exception(
+                    "The path already exists. " \
+                    "Please remove it manually."
+                )
+    elif os.path.isfile(path):
+        os.remove(path)
+    elif os.path.lexists(path):
+        raise Exception(
+            "The path already exists. Please remove it manually."
+        )
+    else:
+        print("Creating new folder "+path)
+        os.mkdir(path)
+
     
 if __name__ == '__main__':
 
@@ -359,14 +391,16 @@ if __name__ == '__main__':
     # make parameter structure if it has not been loaded
     p_gui = {}
     # exposed to GUI
-    p_gui['expose_to_gui'] = {'value': ['input_folder', 'reg_exp', 'output_folder', 'output_format', 
-    'bit_depth', 'map_to_zero', 'map_to_max', 'binning',
+    p_gui['expose_to_gui'] = {'value': ['input_folder', 'reg_exp', 'HDF5_data_set_name', 
+    'output_folder', 'output_format', 
+    'output_bit_depth', 'map_to_zero', 'map_to_max', 'binning',
     'binning_x','binning_y','binning_z','save_xyz_projections','save_volume_data']}
     p_gui['input_folder'] = {'choices': '', 'value': 'C:\\Users\\acquifer\\Desktop\\882-reg3', 'type': 'folder'}
     p_gui['reg_exp'] = {'choices': '', 'value': '.*--transformed.mha$', 'type': 'folder'}
+    p_gui['HDF5_data_set_name'] = {'choices': ['/ITKImage/0/VoxelData', '/Data', '/Data111'], 'value': '/ITKImage/0/VoxelData', 'type': 'folder'}
     p_gui['output_folder'] = {'choices': '', 'value': 'C:\\Users\\acquifer\\Desktop\\xyz01', 'type': 'folder'}
     p_gui['output_format'] = {'choices': ['tif'], 'value': 'tif', 'type': 'string'}
-    p_gui['bit_depth'] = {'choices': ['8-bit','16-bit'], 'value': '16', 'type': 'string'}
+    p_gui['output_bit_depth'] = {'choices': ['8-bit','16-bit'], 'value': '16', 'type': 'string'}
     p_gui['map_to_zero'] = {'choices':'', 'value': 0, 'type': 'int'}
     p_gui['map_to_max'] = {'choices':'', 'value': 65535, 'type': 'int'}
     
@@ -389,6 +423,14 @@ if __name__ == '__main__':
   #
   # Create derived paramters
   #
+  
+  
+  #
+  # Create output folder if it does not exist
+  #
+  
+  ensure_empty_dir(p_gui['output_folder']['value'])
+  
   
   #
   # Save gui parameters
