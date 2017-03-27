@@ -510,8 +510,8 @@ if __name__ == '__main__':
   #
   # show the interactive table
   #
-  frame = ManualControlFrame(tbModel)
-  frame.setVisible(True)
+  #frame = ManualControlFrame(tbModel)
+  #frame.setVisible(True)
 
   print("done!")
 
